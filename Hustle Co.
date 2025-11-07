@@ -1,0 +1,108 @@
+<!--
+HUSTLE CO. - Single-file landing page
+How to use: 
+1) Create a new GitHub repository (public or private).
+2) Add a file named `index.html` and paste this entire file's content.
+3) Enable GitHub Pages in repository settings (branch: main / root) to publish.
+
+This page includes an inline SVG logo (black & white, bold + athletic) and a "Download SVG" button.
+You can also right-click the logo and save it as an SVG/PNG in most browsers.
+-->
+
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>HUSTLE CO. — Official</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Anton&display=swap" rel="stylesheet">
+  <style>
+    :root{--bg:#000;--fg:#fff;--accent:#fff}
+    html,body{height:100%;margin:0;font-family:Inter, system-ui, -apple-system, "Segoe UI", Roboto, "Helvetica Neue", Arial; background:var(--bg); color:var(--fg);}
+    .wrap{min-height:100vh;display:flex;flex-direction:column;align-items:center;justify-content:center;padding:40px}
+    .logo-wrap{display:flex;align-items:center;gap:28px}
+    /* Logo box */
+    .logo{width:380px;max-width:86vw}
+    /* Tagline */
+    .tagline{margin-top:22px;font-size:18px;letter-spacing:1px;opacity:.9}
+
+    /* Buttons */
+    .actions{margin-top:28px;display:flex;gap:12px}
+    .btn{background:transparent;border:2px solid var(--fg);color:var(--fg);padding:10px 18px;border-radius:8px;font-weight:700;cursor:pointer;text-decoration:none;display:inline-flex;align-items:center;gap:8px}
+    .btn.primary{background:var(--fg);color:var(--bg)}
+
+    /* Small print */
+    .info{margin-top:36px;color:rgba(255,255,255,0.55);font-size:13px;text-align:center;max-width:720px}
+
+    /* Footer */
+    footer{position:fixed;left:16px;bottom:12px;color:rgba(255,255,255,0.35);font-size:13px}
+
+    /* make logo bold and sporty via Anton font for wordmark
+       lightning bolt built in SVG path */
+    .wordmark{font-family: 'Anton', sans-serif; font-size:86px; line-height:0.85; letter-spacing:2px}
+
+    /* responsive adjustments */
+    @media (max-width:480px){.wordmark{font-size:52px}.logo{width:270px}}
+  </style>
+</head>
+<body>
+  <main class="wrap">
+    <div class="logo-wrap">
+      <!-- Inline SVG wordmark + lightning bolt -->
+      <svg class="logo" viewBox="0 0 1000 400" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="HUSTLE CO. logo">
+        <defs>
+          <style><![CDATA[
+            .txt{fill:#fff;font-family:'Anton',sans-serif;font-weight:700}
+          ]]></style>
+        </defs>
+
+        <!-- HUSTLE (top) -->
+        <text x="20" y="140" class="txt" font-size="130">HUSTLE</text>
+        <!-- CO. (bottom left) -->
+        <text x="20" y="320" class="txt" font-size="160">CO.</text>
+
+        <!-- Lightning bolt (bottom right) -->
+        <g transform="translate(530,160) scale(1.6)">
+          <path d="M40 0 L0 140 L50 120 L10 300 L210 80 L120 80 L210 0 Z" fill="#fff"/>
+        </g>
+      </svg>
+
+      <!-- Vertical brand block for visual balance (optional) -->
+      <div style="display:none" aria-hidden="true">HUSTLE CO.</div>
+    </div>
+
+    <div class="tagline">Bold. Athletic. Unstoppable.</div>
+
+    <div class="actions">
+      <a class="btn" href="#shop" onclick="alert('This is a demo page — replace with your shop link')">Shop</a>
+      <button class="btn primary" id="downloadBtn">Download SVG</button>
+    </div>
+
+    <p class="info">
+      This is a one-file landing page built for Hustle Co. — copy the HTML into <code>index.html</code> in a GitHub repo and
+      enable GitHub Pages to publish. The logo is an inline SVG (black & white) so it scales crisply on shirts, tags, and social.
+    </p>
+  </main>
+
+  <footer>Made with Hustle • Use this as your starting point</footer>
+
+  <script>
+    // Download the logo SVG as a file
+    document.getElementById('downloadBtn').addEventListener('click', function(){
+      const svgEl = document.querySelector('.logo');
+      const svgData = new XMLSerializer().serializeToString(svgEl);
+      const blob = new Blob([svgData], {type: 'image/svg+xml;charset=utf-8'});
+      const url = URL.createObjectURL(blob);
+      const a = document.createElement('a');
+      a.href = url;
+      a.download = 'hustle-co-logo.svg';
+      document.body.appendChild(a);
+      a.click();
+      a.remove();
+      URL.revokeObjectURL(url);
+    });
+  </script>
+</body>
+</html>
