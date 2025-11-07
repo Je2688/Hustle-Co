@@ -106,3 +106,486 @@ You can also right-click the logo and save it as an SVG/PNG in most browsers.
   </script>
 </body>
 </html>
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>HUSTLE CO. — Shop & Customizer</title>
+  <meta name="description" content="Hustle Co. - Shop. Customize. Hustle.">
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;500;700;900&family=Anton&display=swap" rel="stylesheet">
+  <style>
+    :root{
+      --bg:#0b0b0b; --card:#0f0f0f; --muted:rgba(255,255,255,0.6); --accent:#fff;
+      --glass: rgba(255,255,255,0.04);
+    }
+    *{box-sizing:border-box}
+    body{margin:0; font-family:Inter,system-ui,-apple-system,Segoe UI,Roboto; background:var(--bg); color:var(--accent); -webkit-font-smoothing:antialiased}
+    header{display:flex;align-items:center;justify-content:space-between;padding:18px 28px;border-bottom:1px solid rgba(255,255,255,0.04)}
+    .brand{display:flex;align-items:center;gap:14px}
+    .logo{font-family:Anton, sans-serif;font-size:22px;letter-spacing:1px}
+    nav{display:flex;gap:12px}
+    nav a{color:var(--muted);text-decoration:none;padding:8px 10px;border-radius:8px}
+    nav a:hover{background:var(--glass);color:var(--accent)}
+    main{padding:26px;max-width:1100px;margin:0 auto}
+    .grid{display:grid;grid-template-columns:1fr 420px;gap:28px}
+    /* Product list */
+    .products{display:grid;grid-template-columns:repeat(2,1fr);gap:16px}
+    .card{background:var(--card);padding:14px;border-radius:12px;border:1px solid rgba(255,255,255,0.03)}
+    .product-img{height:180px;border-radius:8px;background:linear-gradient(180deg,#111,#0b0b0b);display:flex;align-items:center;justify-content:center;margin-bottom:10px}
+    .product-title{font-weight:700}
+    .product-price{color:var(--muted);margin-top:6px}
+    .btn{display:inline-block;padding:8px 12px;border-radius:10px;border:2px solid var(--accent);background:transparent;color:var(--accent);cursor:pointer;font-weight:700}
+    .btn.primary{background:var(--accent);color:var(--bg)}
+    .muted{color:var(--muted);font-size:13px}
+
+    /* Right column: customizer & cart */
+    .panel{position:sticky;top:18px}
+    .customizer{padding:12px;background:linear-gradient(180deg,#0f0f0f,#0b0b0b);border-radius:12px;border:1px solid rgba(255,255,255,0.03)}
+    .preview{background:#000;border-radius:10px;padding:10px;margin-bottom:12px;display:flex;align-items:center;justify-content:center}
+    .swatches{display:flex;gap:8px;flex-wrap:wrap}
+    .swatch{width:36px;height:36px;border-radius:8px;border:2px solid rgba(255,255,255,0.06);cursor:pointer}
+    .control{margin:10px 0;display:flex;gap:8px;align-items:center}
+    input[type="text"]{padding:8px;border-radius:8px;border:1px solid rgba(255,255,255,0.06);background:transparent;color:var(--accent);flex:1}
+    select{padding:8px;border-radius:8px;background:transparent;color:var(--accent);border:1px solid rgba(255,255,255,0.06)}
+
+    /* cart */
+    .cart-list{margin-top:12px}
+    .cart-item{display:flex;gap:10px;align-items:center;justify-content:space-between;padding:8px 0;border-bottom:1px dashed rgba(255,255,255,0.03)}
+    .cart-item .meta{font-size:13px;color:var(--muted)}
+    .cart-empty{color:var(--muted);padding:10px 0}
+
+    footer{margin-top:28px;text-align:center;color:var(--muted);font-size:13px;padding-bottom:40px}
+    @media(max-width:900px){.grid{grid-template-columns:1fr;}.products{grid-template-columns:1fr}.panel{position:static;margin-top:18px}}
+  </style>
+</head>
+<body>
+  <header>
+    <div class="brand">
+      <div style="width:52px;height:52px;background:#fff;border-radius:8px;display:flex;align-items:center;justify-content:center;color:#000;font-weight:900;font-family:Anton, sans-serif">H</div>
+      <div>
+        <div class="logo">HUSTLE CO.</div>
+        <div style="font-size:12px;color:var(--muted)">Bold. Athletic. Unstoppable.</div>
+      </div>
+    </div>
+    <nav>
+      <a href="#shop">Shop</a>
+      <a href="#customize">Customize</a>
+      <a id="openCartBtn" href="#cart">Cart (<span id="cartCount">0</span>)</a>
+    </nav>
+  </header>
+
+  <main>
+    <div class="grid">
+      <!-- LEFT: Products -->
+      <section>
+        <h2 id="shop">Shop — Ready-to-customize pieces</h2>
+        <p class="muted">Click "Customize" to open the customizer with that product preloaded.</p>
+
+        <div class="products" id="productList">
+          <!-- Product cards will be injected -->
+        </div>
+      </section>
+
+      <!-- RIGHT: Customizer & Cart -->
+      <aside class="panel">
+        <div class="card customizer" id="customizer">
+          <h3 style="margin:6px 0 12px 0">Customizer</h3>
+
+          <div class="preview" aria-hidden="true">
+            <!-- SVG mockup (scalable). Will update fills / text dynamically -->
+            <svg id="mockupSVG" width="260" height="340" viewBox="0 0 260 340" xmlns="http://www.w3.org/2000/svg">
+              <!-- Shirt / Sweat / Pants shape area (simple) -->
+              <defs>
+                <style>.label{font-family:Inter,Arial;font-weight:700;fill:#000;text-anchor:middle}</style>
+              </defs>
+
+              <!-- base panel (so color shows) -->
+              <rect id="garmentBg" x="0" y="0" width="260" height="340" rx="14" fill="#1f1f1f"></rect>
+
+              <!-- garment silhouette group -->
+              <g id="garmentGroup" transform="translate(10,12)">
+                <!-- T-shirt -->
+                <path id="tshirt" d="M20 20 L60 20 L80 40 L200 40 L220 20 L240 20 L240 200 L20 200 Z" fill="#111" visibility="visible" />
+                <!-- Sweatshirt (different silhouette) -->
+                <path id="sweat" d="M10 30 L250 30 L250 210 L10 210 Z" fill="#111" visibility="hidden" />
+                <!-- Pants silhouette -->
+                <path id="pants" d="M30 40 L120 40 L120 200 L90 200 L90 320 L60 320 L60 200 L30 200 Z" fill="#111" visibility="hidden" />
+              </g>
+
+              <!-- design area (text / graphic) -->
+              <text id="mockText" x="130" y="130" class="label" font-size="18" fill="#fff">HUSTLE</text>
+
+              <!-- small footer mark -->
+              <text x="130" y="320" font-size="11" fill="rgba(255,255,255,0.35)" text-anchor="middle">Hustle Co.</text>
+            </svg>
+          </div>
+
+          <!-- Controls -->
+          <div class="control">
+            <div style="min-width:86px" class="muted">Product</div>
+            <select id="productSelect" aria-label="Select product">
+              <option value="shirt">Shirt</option>
+              <option value="sweatshirt">Sweatshirt</option>
+              <option value="pants">Pants</option>
+            </select>
+          </div>
+
+          <div class="control">
+            <div style="min-width:86px" class="muted">Base Color</div>
+            <div class="swatches" id="colorSwatches">
+              <!-- colors injected -->
+            </div>
+          </div>
+
+          <div class="control">
+            <div style="min-width:86px" class="muted">Text</div>
+            <input id="textInput" placeholder="Add text (e.g., HUSTLE)" maxlength="18" />
+          </div>
+
+          <div class="control">
+            <div style="min-width:86px" class="muted">Font Size</div>
+            <select id="fontSize">
+              <option value="16">Small</option>
+              <option value="22" selected>Medium</option>
+              <option value="32">Large</option>
+            </select>
+          </div>
+
+          <div style="display:flex;gap:8px;margin-top:8px">
+            <button class="btn" id="addToCartBtn">Add to cart</button>
+            <button class="btn" id="downloadBtn">Download SVG</button>
+            <button class="btn primary" id="resetBtn">Reset</button>
+          </div>
+
+          <!-- Cart (compact) -->
+          <div class="card" style="margin-top:12px;padding:10px;background:transparent;border:0">
+            <h4 style="margin:6px 0">Cart</h4>
+            <div class="cart-list" id="cartList"></div>
+            <div style="display:flex;gap:8px;margin-top:10px;align-items:center">
+              <div class="muted">Total:</div>
+              <div id="cartTotal" style="font-weight:900"> $0.00</div>
+              <button class="btn primary" id="checkoutBtn" style="margin-left:auto">Checkout</button>
+            </div>
+          </div>
+
+        </div>
+      </aside>
+    </div>
+
+    <footer>
+      <div style="max-width:780px;margin:16px auto;color:var(--muted)">
+        This is a demo Hustle Co. storefront. To accept payments and process orders use Shopify / Stripe / a back-end. For now this is a fully client-side customizer and cart saved locally.
+      </div>
+    </footer>
+  </main>
+
+  <script>
+    /* ========== Data ========== */
+    const PRODUCTS = [
+      { id: 'shirt', title: 'Hustle T-Shirt', price: 25, type: 'shirt' },
+      { id: 'sweatshirt', title: 'Hustle Sweatshirt', price: 48, type: 'sweatshirt' },
+      { id: 'pants', title: 'Hustle Joggers', price: 42, type: 'pants' }
+    ];
+
+    const COLORS = [
+      {name:'Black', value:'#0b0b0b'},
+      {name:'White', value:'#ffffff'},
+      {name:'Charcoal', value:'#1f1f1f'},
+      {name:'Ash Gray', value:'#9a9a9a'},
+      {name:'Army Green', value:'#3b3f2f'},
+      {name:'Crimson', value:'#8b0000'}
+    ];
+
+    /* ========== Render product cards ========== */
+    const productList = document.getElementById('productList');
+    PRODUCTS.forEach(p => {
+      const card = document.createElement('div');
+      card.className = 'card';
+      card.innerHTML = `
+        <div class="product-img" aria-hidden="true">
+          <svg width="160" height="120" viewBox="0 0 160 120" xmlns="http://www.w3.org/2000/svg">
+            <rect width="160" height="120" rx="8" fill="#0b0b0b"/>
+            <text x="80" y="70" fill="#fff" font-family="Anton,Arial" font-size="20" text-anchor="middle">${p.title.split(' ')[1] || p.title}</text>
+          </svg>
+        </div>
+        <div class="product-title">${p.title}</div>
+        <div class="product-price">$${p.price.toFixed(2)}</div>
+        <div style="margin-top:10px">
+          <button class="btn" data-action="customize" data-id="${p.id}">Customize</button>
+          <button class="btn primary" data-action="buy" data-id="${p.id}" style="margin-left:8px">Buy</button>
+        </div>
+      `;
+      productList.appendChild(card);
+    });
+
+    /* ========== Customizer logic ========== */
+    const productSelect = document.getElementById('productSelect');
+    const colorSwatches = document.getElementById('colorSwatches');
+    const textInput = document.getElementById('textInput');
+    const fontSizeSel = document.getElementById('fontSize');
+    const mockupSVG = document.getElementById('mockupSVG');
+    const garmentBg = document.getElementById('garmentBg');
+    const tshirt = document.getElementById('tshirt');
+    const sweat = document.getElementById('sweat');
+    const pants = document.getElementById('pants');
+    const mockText = document.getElementById('mockText');
+
+    // populate color swatches
+    COLORS.forEach(c=>{
+      const s = document.createElement('button');
+      s.className='swatch';
+      s.style.background = c.value;
+      s.title = c.name;
+      s.addEventListener('click', ()=> {
+        setColor(c.value);
+      });
+      colorSwatches.appendChild(s);
+    });
+
+    function setProduct(type){
+      productSelect.value = type;
+      // toggle silhouettes
+      tshirt.style.visibility = (type==='shirt') ? 'visible' : 'hidden';
+      sweat.style.visibility = (type==='sweatshirt') ? 'visible' : 'hidden';
+      pants.style.visibility = (type==='pants') ? 'visible' : 'hidden';
+      // adjust mockText position for pants
+      if(type==='pants'){ mockText.setAttribute('y', 220); mockText.setAttribute('font-size', fontSizeSel.value); }
+      else { mockText.setAttribute('y', 130); mockText.setAttribute('font-size', fontSizeSel.value); }
+    }
+
+    function setColor(hex){
+      // set the garment fill color and also the "background" of the preview block
+      tshirt.setAttribute('fill', hex);
+      sweat.setAttribute('fill', hex);
+      pants.setAttribute('fill', hex);
+      // also set mockup container background for framing
+      // if color is very dark, put a subtle stroke
+      garmentBg.setAttribute('fill', '#0b0b0b');
+      // ensure text contrast: if bg is dark, text = white, else black
+      const isDark = isColorDark(hex);
+      mockText.setAttribute('fill', isDark ? '#fff' : '#000');
+    }
+
+    function isColorDark(hex){
+      // convert to RGB
+      const c = hex.replace('#','');
+      const r = parseInt(c.substring(0,2),16);
+      const g = parseInt(c.substring(2,4),16);
+      const b = parseInt(c.substring(4,6),16);
+      // perceived luminance
+      const lum = 0.299*r + 0.587*g + 0.114*b;
+      return lum < 160;
+    }
+
+    // update text on change
+    textInput.addEventListener('input', ()=> {
+      mockText.textContent = textInput.value || 'HUSTLE';
+    });
+    fontSizeSel.addEventListener('change', ()=> {
+      mockText.setAttribute('font-size', fontSizeSel.value);
+    });
+    productSelect.addEventListener('change', ()=> {
+      setProduct(productSelect.value);
+    });
+
+    // initial defaults
+    setProduct('shirt');
+    setColor('#0b0b0b');
+    mockText.textContent = 'HUSTLE';
+
+    /* ========== Add to cart & cart logic (localStorage) ========== */
+    const cartKey = 'hustleco_cart_v1';
+    const cartListEl = document.getElementById('cartList');
+    const cartCount = document.getElementById('cartCount');
+    const cartTotalEl = document.getElementById('cartTotal');
+
+    function getCart(){ return JSON.parse(localStorage.getItem(cartKey)||'[]'); }
+    function saveCart(c){ localStorage.setItem(cartKey, JSON.stringify(c)); renderCart(); }
+    function addItemToCart(item){
+      const cart = getCart();
+      cart.push(item);
+      saveCart(cart);
+    }
+    function removeItem(index){
+      const cart = getCart();
+      cart.splice(index,1);
+      saveCart(cart);
+    }
+
+    function renderCart(){
+      const cart = getCart();
+      cartListEl.innerHTML = '';
+      if(cart.length===0){
+        cartListEl.innerHTML = '<div class="cart-empty">Your cart is empty.</div>';
+      } else {
+        cart.forEach((it, i)=>{
+          const div = document.createElement('div');
+          div.className='cart-item';
+          div.innerHTML = `
+            <div>
+              <div style="font-weight:700">${it.title}</div>
+              <div class="meta">${it.product} • ${it.colorName} • text: "${it.text}"</div>
+            </div>
+            <div>
+              <div style="font-weight:900">$${it.price.toFixed(2)}</div>
+              <button class="btn" data-remove="${i}" style="margin-top:6px">Remove</button>
+            </div>
+          `;
+          cartListEl.appendChild(div);
+        });
+        // wire remove handlers
+        cartListEl.querySelectorAll('[data-remove]').forEach(btn=>{
+          btn.addEventListener('click', (e)=>{
+            const idx = Number(btn.getAttribute('data-remove'));
+            removeItem(idx);
+          });
+        });
+      }
+      cartCount.textContent = cart.length;
+      const total = cart.reduce((s,a)=>s+a.price,0);
+      cartTotalEl.textContent = `$${total.toFixed(2)}`;
+    }
+
+    // wire buttons: addToCart & buy (from product list)
+    document.getElementById('addToCartBtn').addEventListener('click', ()=>{
+      const productId = productSelect.value;
+      const product = PRODUCTS.find(p=>p.id===productId);
+      const color = findSwatchColor();
+      const item = {
+        id: Date.now(),
+        title: product.title,
+        product: productId,
+        colorHex: color.hex,
+        colorName: color.name,
+        text: textInput.value || 'HUSTLE',
+        price: product.price
+      };
+      addItemToCart(item);
+      alert('Added to cart — open the Cart to view.');
+    });
+
+    // quick Buy -> opens customizer preloaded (simulate)
+    document.querySelectorAll('[data-action="customize"]').forEach(btn=>{
+      btn.addEventListener('click', ()=> {
+        const id = btn.getAttribute('data-id');
+        setProduct(id);
+        window.scrollTo({top:0, behavior:'smooth'});
+      });
+    });
+    document.querySelectorAll('[data-action="buy"]').forEach(btn=>{
+      btn.addEventListener('click', ()=> {
+        const id = btn.getAttribute('data-id');
+        setProduct(id);
+        // find base price and add to cart
+        const product = PRODUCTS.find(p=>p.id===id);
+        const color = findSwatchColor();
+        const item = {
+          id: Date.now(),
+          title: product.title,
+          product: id,
+          colorHex: color.hex,
+          colorName: color.name,
+          text: textInput.value || 'HUSTLE',
+          price: product.price
+        };
+        addItemToCart(item);
+        alert('Added to cart. Open the cart to checkout (demo).');
+      });
+    });
+
+    function findSwatchColor(){
+      // find active by reading current fill of tshirt (they all update simultaneously)
+      const fill = tshirt.getAttribute('fill') || '#0b0b0b';
+      const found = COLORS.find(c=>c.value.toLowerCase()===fill.toLowerCase());
+      return found || {name:'Custom', hex:fill};
+    }
+
+    // load cart on start
+    renderCart();
+
+    /* ========== Download SVG preview ========== */
+    const downloadBtn = document.getElementById('downloadBtn');
+    downloadBtn.addEventListener('click', ()=> {
+      const svg = document.getElementById('mockupSVG');
+      const serializer = new XMLSerializer();
+      let source = serializer.serializeToString(svg);
+
+      // add name spaces if missing
+      if(!source.match(/^<svg[^>]+xmlns="http:\/\/www\.w3\.org\/2000\/svg"/)){
+        source = source.replace(/^<svg/, '<svg xmlns="http://www.w3.org/2000/svg"');
+      }
+      if(!source.match(/^<svg[^>]+xmlns:xlink="http:\/\/www\.w3\.org\/1999\/xlink"/)){
+        source = source.replace(/^<svg/, '<svg xmlns:xlink="http://www.w3.org/1999/xlink"');
+      }
+
+      // add XML declaration
+      source = '<?xml version="1.0" standalone="no"?>\r\n' + source;
+
+      const blob = new Blob([source], {type: 'image/svg+xml;charset=utf-8'});
+      const url = URL.createObjectURL(blob);
+      const a = document.createElement('a');
+      a.href = url;
+      a.download = `hustleco-${productSelect.value}-mockup.svg`;
+      document.body.appendChild(a);
+      a.click();
+      a.remove();
+      URL.revokeObjectURL(url);
+    });
+
+    /* ========== Reset button ========== */
+    document.getElementById('resetBtn').addEventListener('click', ()=>{
+      // defaults
+      setProduct('shirt');
+      setColor('#0b0b0b');
+      textInput.value = 'HUSTLE';
+      mockText.textContent = 'HUSTLE';
+      fontSizeSel.value = '22';
+    });
+
+    /* ========== Cart open & checkout (demo) ======== */
+    document.getElementById('openCartBtn').addEventListener('click', (e)=>{
+      e.preventDefault();
+      // scroll to cart area
+      const rect = cartListEl.getBoundingClientRect();
+      window.scrollTo({top: window.scrollY + rect.top - 80, behavior:'smooth'});
+    });
+
+    document.getElementById('checkoutBtn').addEventListener('click', ()=>{
+      const cart = getCart();
+      if(cart.length===0){ alert('Your cart is empty. Add items first.'); return; }
+      // Demo checkout: save JSON and clear cart (in real site you would send to server)
+      const order = {
+        id: 'ORD-'+Date.now(),
+        items: cart,
+        total: cart.reduce((s,a)=>s+a.price,0),
+        created: new Date().toISOString()
+      };
+      // simulate saving by downloading a JSON order file
+      const blob = new Blob([JSON.stringify(order, null, 2)], {type:'application/json'});
+      const url = URL.createObjectURL(blob);
+      const a = document.createElement('a');
+      a.href = url;
+      a.download = `${order.id}.json`;
+      document.body.appendChild(a);
+      a.click();
+      a.remove();
+      URL.revokeObjectURL(url);
+      // clear cart
+      saveCart([]);
+      alert('Demo checkout complete — order JSON downloaded. For live payments integrate with Stripe / Shopify.');
+    });
+
+    /* Small accessibility: keyboard enter to update text */
+    textInput.addEventListener('keyup', (e)=>{
+      if(e.key === 'Enter'){ mockText.textContent = textInput.value || 'HUSTLE'; }
+    });
+
+    // Ensure cart renders when storage changes (if multiple tabs)
+    window.addEventListener('storage', (e)=> {
+      if(e.key === cartKey) renderCart();
+    });
+
+  </script>
+</body>
+</html>
